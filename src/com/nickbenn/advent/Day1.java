@@ -44,7 +44,9 @@ public class Day1 {
     Map<Long, Long> doubles = new HashMap<>();
     Set<Long> doubleSums = doubles.keySet();
     long product = 0;
-    long[] values = parse(path).toArray();
+    long[] values = parse(path)
+        .peek(singles::add)
+        .toArray();
     outer:
     for (int i = 0; i < values.length; i++) {
       long outerValue = values[i];
@@ -52,8 +54,6 @@ public class Day1 {
       if (doubleSums.contains(outerComplement)) {
         product = outerValue * doubles.get(outerComplement);
         break;
-      } else {
-        singles.add(outerValue);
       }
       for (int j = i + 1; j < values.length; j++) {
         long innerValue = values[j];
@@ -63,7 +63,6 @@ public class Day1 {
           break outer;
         } else {
           doubles.put(innerValue + outerValue, innerValue * outerValue);
-          singles.add(innerValue);
         }
       }
     }
