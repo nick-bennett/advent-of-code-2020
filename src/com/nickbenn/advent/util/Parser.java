@@ -1,0 +1,119 @@
+/*
+ *  Copyright 2020 Nicholas Bennett.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+package com.nickbenn.advent.util;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.BitSet;
+import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
+import java.util.stream.Stream;
+
+public class Parser {
+
+  private final Path path;
+  private final boolean trimmed;
+  private final boolean stripped;
+
+  private Parser(Path path, boolean trimmed, boolean stripped) {
+    this.path = path;
+    this.trimmed = trimmed;
+    this.stripped = stripped;
+  }
+
+  public Stream<String> stream() throws IOException {
+    return rawStream()
+        .map((line) -> trimmed ? line.trim() : line)
+        .filter((line) -> !(stripped && line.isEmpty()));
+  }
+
+  public IntStream intStream() throws IOException {
+    return stream()
+        .mapToInt(Integer::parseInt);
+  }
+
+  public LongStream longStream() throws IOException {
+    return stream()
+        .mapToLong(Long::parseLong);
+  }
+
+  public DoubleStream doubleStream() throws IOException {
+    return stream()
+        .mapToDouble(Double::parseDouble);
+  }
+
+  public BitSet bitSet() throws IOException {
+    return intStream()
+        .collect(BitSet::new, BitSet::set, BitSet::or);
+  }
+
+  public String rawString() throws IOException {
+    return Files.readString(path);
+  }
+
+  public String joinedString() throws IOException {
+    return stream()
+        .collect(Collectors.joining(""));
+  }
+
+  public String joinedString(CharSequence delimiter) throws IOException {
+    return stream()
+        .collect(Collectors.joining(delimiter));
+  }
+
+  private Stream<String> rawStream() throws IOException {
+    return Files.lines(path);
+  }
+
+  public static class Builder {
+
+    public static final String DEFAULT_FILENAME = "input.txt";
+
+    private final Class<?> clazz;
+    private String filename = DEFAULT_FILENAME;
+    private boolean trimmed;
+    private boolean stripped;
+
+    public Builder(Class<?> clazz) {
+      this.clazz = clazz;
+    }
+
+    public Builder setFilename(String filename) {
+      this.filename = filename;
+      return this;
+    }
+
+    public Builder setTrimmed(boolean trimmed) {
+      this.trimmed = trimmed;
+      return this;
+    }
+
+    public Builder setStripped(boolean stripped) {
+      this.stripped = stripped;
+      return this;
+    }
+
+    public Parser build() throws URISyntaxException, IOException {
+      return new Parser(Path.of(clazz.getResource(filename).toURI()), trimmed, stripped);
+    }
+
+  }
+
+}
