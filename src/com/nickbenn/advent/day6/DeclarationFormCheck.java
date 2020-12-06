@@ -32,11 +32,9 @@ public class DeclarationFormCheck {
   private final Collection<String> groups;
 
   public DeclarationFormCheck() throws IOException, URISyntaxException {
-    groups = GROUP_DELIMITER.splitAsStream(
-        new Parser.Builder(getClass())
-            .build()
-            .rawString()
-    )
+    groups = new Parser.Builder(getClass())
+        .build()
+        .lineGroupStream()
         .collect(Collectors.toList());
   }
 

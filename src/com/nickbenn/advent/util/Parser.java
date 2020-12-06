@@ -20,6 +20,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.BitSet;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
@@ -27,6 +28,8 @@ import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 public class Parser {
+
+  private static final Pattern BLANK_LINE_SPLITTER = Pattern.compile("\\n\\s*\\n");
 
   private final Path path;
   private final boolean trimmed;
@@ -38,24 +41,24 @@ public class Parser {
     this.stripped = stripped;
   }
 
-  public Stream<String> stream() throws IOException {
+  public Stream<String> lineStream() throws IOException {
     return rawStream()
         .map((line) -> trimmed ? line.trim() : line)
         .filter((line) -> !(stripped && line.isEmpty()));
   }
 
   public IntStream intStream() throws IOException {
-    return stream()
+    return lineStream()
         .mapToInt(Integer::parseInt);
   }
 
   public LongStream longStream() throws IOException {
-    return stream()
+    return lineStream()
         .mapToLong(Long::parseLong);
   }
 
   public DoubleStream doubleStream() throws IOException {
-    return stream()
+    return lineStream()
         .mapToDouble(Double::parseDouble);
   }
 
@@ -69,13 +72,19 @@ public class Parser {
   }
 
   public String joinedString() throws IOException {
-    return stream()
+    return lineStream()
         .collect(Collectors.joining(""));
   }
 
   public String joinedString(CharSequence delimiter) throws IOException {
-    return stream()
+    return lineStream()
         .collect(Collectors.joining(delimiter));
+  }
+
+  public Stream<String> lineGroupStream() throws IOException {
+    return BLANK_LINE_SPLITTER.splitAsStream(rawString())
+        .map((line) -> trimmed ? line.trim() : line)
+        .filter((line) -> !(stripped && line.isEmpty()));
   }
 
   private Stream<String> rawStream() throws IOException {

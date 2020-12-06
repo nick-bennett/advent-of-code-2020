@@ -27,7 +27,7 @@ public class Main {
   public Main() throws IOException, URISyntaxException {
     this.data = new Parser.Builder(getClass())
         .build()
-        .stream();
+        .lineStream();
   }
 
   public static void main(String[] args) throws IOException, URISyntaxException {

@@ -37,7 +37,7 @@ public class SkiingHazard {
   public SkiingHazard() throws IOException, URISyntaxException {
     terrain = new Builder(getClass())
         .build()
-        .stream()
+        .lineStream()
         .map(String::toCharArray)
         .toArray(char[][]::new);
   }

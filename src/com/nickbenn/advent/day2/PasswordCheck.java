@@ -28,7 +28,7 @@ public class PasswordCheck {
   public PasswordCheck() throws IOException, URISyntaxException {
     entries = new Parser.Builder(getClass())
         .build()
-        .stream()
+        .lineStream()
         .map(PasswordEntry::new)
         .collect(Collectors.toUnmodifiableList());
     ;

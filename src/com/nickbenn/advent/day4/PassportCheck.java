@@ -50,23 +50,20 @@ public class PassportCheck {
   private final List<Map<String, String>> passports;
 
   public PassportCheck() throws IOException, URISyntaxException {
-    Parser parser = new Parser.Builder(getClass()).build();
-    passports = parsePassports(parser);
+    passports = new Parser.Builder(getClass())
+        .build()
+        .lineGroupStream()
+        .map((passport) -> ENTRY_DELIMITER.splitAsStream(passport)
+            .map(PAIR_DELIMITER::split)
+            .collect(Collectors.toMap((String[] pair) -> pair[0], (String[] pair) -> pair[1]))
+        )
+        .collect(Collectors.toList());
   }
 
   public static void main(String[] args) throws URISyntaxException, IOException {
     PassportCheck check = new PassportCheck();
     System.out.println(check.basicValidation());
     System.out.println(check.advancedValidation());
-  }
-
-  private static List<Map<String, String>> parsePassports(Parser parser) throws IOException {
-    return PASSPORT_DELIMITER.splitAsStream(parser.rawString())
-        .map((passport) -> ENTRY_DELIMITER.splitAsStream(passport)
-            .map(PAIR_DELIMITER::split)
-            .collect(Collectors.toMap((String[] pair) -> pair[0], (String[] pair) -> pair[1]))
-        )
-        .collect(Collectors.toList());
   }
 
   private long basicValidation() {

@@ -28,7 +28,7 @@ public class BoardingPassCheck {
   public BoardingPassCheck() throws IOException, URISyntaxException {
     ids = new Parser.Builder(getClass())
         .build()
-        .stream()
+        .lineStream()
         .mapToInt(BoardingPassCheck::getId)
         .toArray();;
   }
