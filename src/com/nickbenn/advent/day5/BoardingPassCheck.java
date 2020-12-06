@@ -18,31 +18,38 @@ package com.nickbenn.advent.day5;
 import com.nickbenn.advent.util.Parser;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.NoSuchElementException;
 import java.util.stream.IntStream;
 
-public class Main {
+public class BoardingPassCheck {
 
-  public static void main(String[] args) throws URISyntaxException, IOException {
-    int[] data = new Parser.Builder(Main.class)
+  private final int[] ids;
+
+  public BoardingPassCheck() throws IOException, URISyntaxException {
+    ids = new Parser.Builder(getClass())
         .build()
         .stream()
-        .mapToInt(Main::getId)
-        .toArray();
-    System.out.println(max(data));
-    System.out.println(missing(data));
+        .mapToInt(BoardingPassCheck::getId)
+        .toArray();;
   }
 
-  private static int max(int[] data) {
-    return IntStream.of(data)
+  public static void main(String[] args) throws URISyntaxException, IOException {
+    BoardingPassCheck check = new BoardingPassCheck();
+    System.out.println(check.max());
+    System.out.println(check.missing());
+  }
+
+  private int max() {
+    return IntStream.of(ids)
         .max()
-        .orElse(0);
+        .orElseThrow(NoSuchElementException::new);
   }
 
-  private static int missing(int[] data) {
-    return 1 + IntStream.of(data)
+  private int missing() {
+    return 1 + IntStream.of(ids)
         .sorted()
         .reduce((a, b) -> (b - a > 1) ? a : b)
-        .orElse(0);
+        .orElseThrow(NoSuchElementException::new);
   }
 
   private static int getId(String assignment) {

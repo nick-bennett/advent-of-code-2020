@@ -26,7 +26,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class Main {
+public class PassportCheck {
 
   private static final Pattern PASSPORT_DELIMITER = Pattern.compile("\\n\\s*\\n");
   private static final Pattern ENTRY_DELIMITER = Pattern.compile("\\s+");
@@ -47,10 +47,17 @@ public class Main {
   );
   private static final Set<String> REQUIRED_FIELDS = RULES.keySet();
 
+  private final List<Map<String, String>> passports;
+
+  public PassportCheck() throws IOException, URISyntaxException {
+    Parser parser = new Parser.Builder(getClass()).build();
+    passports = parsePassports(parser);
+  }
+
   public static void main(String[] args) throws URISyntaxException, IOException {
-    List<Map<String, String>> passports = parsePassports(new Parser.Builder(Main.class).build());
-    System.out.println(basicValidation(passports));
-    System.out.println(advancedValidation(passports));
+    PassportCheck check = new PassportCheck();
+    System.out.println(check.basicValidation());
+    System.out.println(check.advancedValidation());
   }
 
   private static List<Map<String, String>> parsePassports(Parser parser) throws IOException {
@@ -62,14 +69,14 @@ public class Main {
         .collect(Collectors.toList());
   }
 
-  private static long basicValidation(List<Map<String, String>> data) {
-    return data.stream()
+  private long basicValidation() {
+    return passports.stream()
         .filter((passport) -> passport.keySet().containsAll(REQUIRED_FIELDS))
         .count();
   }
 
-  private static long advancedValidation(List<Map<String, String>> data) {
-    return data.stream()
+  private long advancedValidation() {
+    return passports.stream()
         .filter((passport) -> passport.keySet().containsAll(REQUIRED_FIELDS))
         .filter((passport) -> passport.keySet().stream()
             .allMatch((key) -> RULES.getOrDefault(key, (v) -> true).test(passport.get(key)))

@@ -21,19 +21,26 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Main {
+public class PasswordCheck {
 
-  public static void main(String[] args) throws URISyntaxException, IOException {
-    List<Entry> entries = new Parser.Builder(Main.class)
+  private final List<PasswordEntry> entries;
+
+  public PasswordCheck() throws IOException, URISyntaxException {
+    entries = new Parser.Builder(getClass())
         .build()
         .stream()
-        .map(Entry::new)
+        .map(PasswordEntry::new)
         .collect(Collectors.toUnmodifiableList());
-    System.out.println(getValidByCount(entries));
-    System.out.println(getValidByPosition(entries));
+    ;
   }
 
-  private static long getValidByCount(List<Entry> entries) throws IOException {
+  public static void main(String[] args) throws URISyntaxException, IOException {
+    PasswordCheck check = new PasswordCheck();
+    System.out.println(check.getValidByCount());
+    System.out.println(check.getValidByPosition());
+  }
+
+  private long getValidByCount() throws IOException {
     return entries.stream()
         .filter((entry) -> {
           String password = entry.getPassword();
@@ -43,7 +50,7 @@ public class Main {
         .count();
   }
 
-  private static long getValidByPosition(List<Entry> entries) throws IOException {
+  private long getValidByPosition() throws IOException {
     return entries.stream()
         .filter((entry) -> {
           char[] password = entry.getPassword().toCharArray();

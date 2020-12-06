@@ -15,11 +15,11 @@
  */
 package com.nickbenn.advent.day3;
 
-import com.nickbenn.advent.util.Parser;
+import com.nickbenn.advent.util.Parser.Builder;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-public class Main {
+public class SkiingHazard {
 
   private static final int[][] slopes1 = {
       {3, 1}
@@ -32,17 +32,23 @@ public class Main {
       {1, 2},
   };
 
-  public static void main(String[] args) throws URISyntaxException, IOException {
-    char[][] terrain = new Parser.Builder(Main.class)
+  private final char[][] terrain;
+
+  public SkiingHazard() throws IOException, URISyntaxException {
+    terrain = new Builder(getClass())
         .build()
         .stream()
         .map(String::toCharArray)
         .toArray(char[][]::new);
-    System.out.println(trees(terrain, slopes1));
-    System.out.println(trees(terrain, slopes2));
   }
 
-  private static long trees(char[][] terrain, int[][] slopes) {
+  public static void main(String[] args) throws URISyntaxException, IOException {
+    SkiingHazard hazard = new SkiingHazard();
+    System.out.println(hazard.trees(slopes1));
+    System.out.println(hazard.trees(slopes2));
+  }
+
+  private long trees(int[][] slopes) {
     long product = 1;
     for (int[] slope : slopes) {
       int right = slope[0];

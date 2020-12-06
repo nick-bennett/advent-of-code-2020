@@ -21,19 +21,25 @@ import java.net.URISyntaxException;
 import java.util.BitSet;
 import java.util.NoSuchElementException;
 
-public class Main {
+public class ExpenseAccountCheck {
 
   private static final int SUM = 2020;
 
-  public static void main(String[] args) throws URISyntaxException, IOException {
-    BitSet data = new Parser.Builder(Main.class)
+  private final BitSet data;
+
+  public ExpenseAccountCheck() throws IOException, URISyntaxException {
+    data = new Parser.Builder(getClass())
         .build()
         .bitSet();
-    System.out.println(dualSumProduct(data));
-    System.out.println(tripleSumProduct(data));
   }
 
-  private static int dualSumProduct(BitSet data) {
+  public static void main(String[] args) throws URISyntaxException, IOException {
+    ExpenseAccountCheck check = new ExpenseAccountCheck();
+    System.out.println(check.dualSumProduct());
+    System.out.println(check.tripleSumProduct());
+  }
+
+  private int dualSumProduct() {
     for (int value = data.nextSetBit(0); value >= 0; value = data.nextSetBit(value + 1)) {
       int complement = SUM - value;
       if (complement >= 0 && data.get(complement)) {
@@ -43,7 +49,7 @@ public class Main {
     throw new NoSuchElementException();
   }
 
-  private static int tripleSumProduct(BitSet data) throws IOException {
+  private int tripleSumProduct() throws IOException {
     for (int outer = data.nextSetBit(0); outer >= 0; outer = data.nextSetBit(outer + 1)) {
       for (int inner = data.nextSetBit(outer + 1); inner >= 0; inner = data.nextSetBit(inner + 1)) {
         int doubleSum = inner + outer;
