@@ -13,25 +13,25 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.nickbenn.advent.day6;
+package com.nickbenn.advent.day7;
 
 import com.nickbenn.advent.util.Parser;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.NoSuchElementException;
-import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
-public class UnknownCheck {
+public class Main {
 
-  public UnknownCheck() throws IOException, URISyntaxException {
-//    new Parser.Builder(getClass())
-//        .build()
+  private final Stream<String> data;
+
+  public Main() throws IOException, URISyntaxException {
+    this.data = new Parser.Builder(getClass())
+        .build()
+        .stream();
   }
 
-  public static void main(String[] args) throws URISyntaxException, IOException {
-    UnknownCheck check = new UnknownCheck();
-//    System.out.println();
-//    System.out.println();
+  public static void main(String[] args) throws IOException, URISyntaxException {
+    Main main = new Main();
   }
 
 }
