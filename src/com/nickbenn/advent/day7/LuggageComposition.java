@@ -19,7 +19,6 @@ import com.nickbenn.advent.util.Parser;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -28,10 +27,9 @@ import java.util.regex.Pattern;
 public class LuggageComposition {
 
   private static final Pattern CONTAINER_PATTERN = Pattern.compile("^(\\S+\\s+\\S+)(?=\\s+bags?)");
-  private static final Pattern COMPOSITION_PATTERN =
-      Pattern.compile("(\\d+)\\s+(\\S+\\s+\\S+)(?=\\s+bags?)");
-  private static final String BAG_TO_CONTAIN = "shiny gold";
-  private static final String BAG_TO_COMPOSE = "shiny gold";
+  private static final Pattern COMPONENT_PATTERN = Pattern
+      .compile("(\\d+)\\s+(\\S+\\s+\\S+)(?=\\s+bags?)");
+  private static final String SUBJECT_BAG_NAME = "shiny gold";
 
   private final Map<String, Map<String, Integer>> compositions;
   private final Map<String, Set<String>> containers;
@@ -45,51 +43,27 @@ public class LuggageComposition {
         .forEach((line) -> {
           Matcher containerMatcher = CONTAINER_PATTERN.matcher(line);
           if (containerMatcher.find()) {
-            String key = containerMatcher.group(1);
-            Map<String, Integer> composition = new HashMap<>();
-            Matcher containedMatcher = COMPOSITION_PATTERN.matcher(line);
-            while (containedMatcher.find()) {
-              String color = containedMatcher.group(2);
-              composition.put(color, Integer.parseInt(containedMatcher.group(1)));
-              Set<String> containingColors = containers.getOrDefault(color, new HashSet<>());
-              containingColors.add(key);
-              containers.putIfAbsent(color, containingColors);
+            ColoredBag container = ColoredBag.getInstance(containerMatcher.group(1));
+            Matcher componentMatcher = COMPONENT_PATTERN.matcher(line);
+            while (componentMatcher.find()) {
+              ColoredBag component = ColoredBag.getInstance(componentMatcher.group(2));
+              container.addComponent(component, Integer.parseInt(componentMatcher.group(1)));
             }
-            compositions.put(key, composition);
           }
         });
   }
 
   public static void main(String[] args) throws IOException, URISyntaxException {
     LuggageComposition composition = new LuggageComposition();
-    System.out.println(composition.totalContaining(BAG_TO_CONTAIN));
-    System.out.println(composition.totalComposition(BAG_TO_COMPOSE));
-  }
-
-  public int totalContaining(String color) {
-    Set<String> colors = new HashSet<>();
-    findAllContaining(color, colors);
-    return colors.size();
-  }
-
-  public int totalComposition(String color) {
-    return compositions.getOrDefault(color, new HashMap<>())
-        .entrySet()
-        .stream()
-        .mapToInt((entry) -> entry.getValue() * (1 + totalComposition(entry.getKey())))
-        .sum();
-  }
-
-  private void findAllContaining(String color, Set<String> composed) {
-    if (containers.containsKey(color)) {
-      Set<String> containingColors = containers.get(color);
-      for (String container : containingColors) {
-        if (!composed.contains(container)) {
-          composed.add(container);
-          findAllContaining(container, composed);
-        }
-      }
-    }
+    ColoredBag bag = ColoredBag.getInstance(SUBJECT_BAG_NAME);
+    System.out.println(bag.getAllContainers().size());
+    System.out.println(
+        bag.getAllComponents()
+            .values()
+            .stream()
+            .reduce(Integer::sum)
+            .orElse(0)
+    );
   }
 
 }
