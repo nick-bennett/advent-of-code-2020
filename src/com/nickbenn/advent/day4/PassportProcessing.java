@@ -15,6 +15,7 @@
  */
 package com.nickbenn.advent.day4;
 
+import com.nickbenn.advent.util.Defaults;
 import com.nickbenn.advent.util.Parser;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -25,10 +26,10 @@ import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class PassportCheck {
+public class PassportProcessing {
 
-  private static final Pattern PASSPORT_DELIMITER = Pattern.compile("\\n\\s*\\n");
   private static final Pattern ENTRY_DELIMITER = Pattern.compile("\\s+");
   private static final Pattern PAIR_DELIMITER = Pattern.compile(":");
   private static final Pattern HEIGHT_PARSER = Pattern.compile("^(?:(\\d+)cm)|(?:(\\d+)in)$");
@@ -49,30 +50,34 @@ public class PassportCheck {
 
   private final List<Map<String, String>> passports;
 
-  public PassportCheck() throws IOException, URISyntaxException {
-    passports = new Parser.Builder(getClass())
-        .build()
-        .lineGroupStream()
-        .map((passport) -> ENTRY_DELIMITER.splitAsStream(passport)
-            .map(PAIR_DELIMITER::split)
-            .collect(Collectors.toMap((String[] pair) -> pair[0], (String[] pair) -> pair[1]))
-        )
-        .collect(Collectors.toList());
+  public PassportProcessing(String filename) throws IOException, URISyntaxException {
+    try (
+        Stream<String> stream = new Parser.Builder(getClass().getResource(filename).toURI())
+            .build()
+            .lineGroupStream()
+    ) {
+      passports = stream
+          .map((passport) -> ENTRY_DELIMITER.splitAsStream(passport)
+              .map(PAIR_DELIMITER::split)
+              .collect(Collectors.toMap((String[] pair) -> pair[0], (String[] pair) -> pair[1]))
+          )
+          .collect(Collectors.toList());
+    }
   }
 
   public static void main(String[] args) throws URISyntaxException, IOException {
-    PassportCheck check = new PassportCheck();
+    PassportProcessing check = new PassportProcessing(Defaults.FILENAME);
     System.out.println(check.basicValidation());
     System.out.println(check.advancedValidation());
   }
 
-  private long basicValidation() {
+  public long basicValidation() {
     return passports.stream()
         .filter((passport) -> passport.keySet().containsAll(REQUIRED_FIELDS))
         .count();
   }
 
-  private long advancedValidation() {
+  public long advancedValidation() {
     return passports.stream()
         .filter((passport) -> passport.keySet().containsAll(REQUIRED_FIELDS))
         .filter((passport) -> passport.keySet().stream()

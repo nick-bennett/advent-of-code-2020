@@ -24,60 +24,60 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class ColoredBag {
+public class LuggageRule {
 
   private static final Pattern WHITESPACE_SPLITTER = Pattern.compile("\\s+");
   private static final String SPINAL_CASE_DELIMITER = "-";
-  private static final Map<String, ColoredBag> bags = new HashMap<>();
+  private static final Map<String, LuggageRule> bags = new HashMap<>();
 
   private final String name;
   private final int hash;
-  private final Map<ColoredBag, Integer> components;
-  private final Set<ColoredBag> containers;
+  private final Map<LuggageRule, Integer> components;
+  private final Set<LuggageRule> containers;
 
-  private ColoredBag(String name) {
+  private LuggageRule(String name) {
     this.name = name;
     hash = name.hashCode();
     components = new HashMap<>();
     containers = new HashSet<>();
   }
 
-  public static ColoredBag getInstance(String name) {
+  public static LuggageRule getInstance(String name) {
     name = WHITESPACE_SPLITTER.splitAsStream(name)
         .map(String::toLowerCase)
         .collect(Collectors.joining(SPINAL_CASE_DELIMITER));
-    return bags.computeIfAbsent(name, ColoredBag::new);
+    return bags.computeIfAbsent(name, LuggageRule::new);
   }
 
   public String getName() {
     return name;
   }
 
-  public static Collection<ColoredBag> getBags() {
+  public static Collection<LuggageRule> getBags() {
     return Collections.unmodifiableCollection(bags.values());
   }
 
-  public void addComponent(ColoredBag component, int quantity) {
+  public void addComponent(LuggageRule component, int quantity) {
     components.put(component, quantity);
     component.addContainer(this);
   }
 
-  public Map<ColoredBag, Integer> getComponents() {
+  public Map<LuggageRule, Integer> getComponents() {
     return Collections.unmodifiableMap(components);
   }
 
-  public Set<ColoredBag> getContainers() {
+  public Set<LuggageRule> getContainers() {
     return Collections.unmodifiableSet(containers);
   }
 
-  public Map<ColoredBag, Integer> getAllComponents() {
-    Map<ColoredBag, Integer> components = new HashMap<>();
+  public Map<LuggageRule, Integer> getAllComponents() {
+    Map<LuggageRule, Integer> components = new HashMap<>();
     findAllComponents(components, 1);
     return components;
   }
 
-  public Set<ColoredBag> getAllContainers() {
-    Set<ColoredBag> containers = new HashSet<>();
+  public Set<LuggageRule> getAllContainers() {
+    Set<LuggageRule> containers = new HashSet<>();
     findAllContainers(containers);
     return containers;
   }
@@ -90,9 +90,9 @@ public class ColoredBag {
   @Override
   public boolean equals(Object obj) {
     return obj == this
-        || (obj instanceof ColoredBag
-        && ((ColoredBag) obj).hash == hash
-        && ((ColoredBag) obj).name.equals(name));
+        || (obj instanceof LuggageRule
+        && ((LuggageRule) obj).hash == hash
+        && ((LuggageRule) obj).name.equals(name));
   }
 
   @Override
@@ -100,12 +100,12 @@ public class ColoredBag {
     return name;
   }
 
-  private void addContainer(ColoredBag container) {
+  private void addContainer(LuggageRule container) {
     containers.add(container);
   }
 
-  private void findAllContainers(Set<ColoredBag> containers) {
-    for (ColoredBag container : this.containers) {
+  private void findAllContainers(Set<LuggageRule> containers) {
+    for (LuggageRule container : this.containers) {
       if (!containers.contains(container)) {
         containers.add(container);
         container.findAllContainers(containers);
@@ -113,7 +113,7 @@ public class ColoredBag {
     }
   }
 
-  private void findAllComponents(Map<ColoredBag, Integer> components, int multiplier) {
+  private void findAllComponents(Map<LuggageRule, Integer> components, int multiplier) {
     this.components.forEach((bag, quantity) -> {
       components.put(bag, quantity * multiplier + components.getOrDefault(bag, 0));
       bag.findAllComponents(components, quantity * multiplier);

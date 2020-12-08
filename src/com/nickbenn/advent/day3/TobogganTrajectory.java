@@ -15,16 +15,18 @@
  */
 package com.nickbenn.advent.day3;
 
+import com.nickbenn.advent.util.Defaults;
 import com.nickbenn.advent.util.Parser.Builder;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.stream.Stream;
 
-public class SkiingHazard {
+public class TobogganTrajectory {
 
-  private static final int[][] slopes1 = {
+  public static final int[][] slopes1 = {
       {3, 1}
   };
-  private static final int[][] slopes2 = {
+  public static final int[][] slopes2 = {
       {1, 1},
       {3, 1},
       {5, 1},
@@ -34,21 +36,25 @@ public class SkiingHazard {
 
   private final char[][] terrain;
 
-  public SkiingHazard() throws IOException, URISyntaxException {
-    terrain = new Builder(getClass())
-        .build()
-        .lineStream()
-        .map(String::toCharArray)
-        .toArray(char[][]::new);
+  public TobogganTrajectory(String filename) throws IOException, URISyntaxException {
+    try (
+        Stream<String> stream = new Builder(getClass().getResource(filename).toURI())
+            .build()
+            .lineStream()
+    ) {
+      terrain = stream
+          .map(String::toCharArray)
+          .toArray(char[][]::new);
+    }
   }
 
   public static void main(String[] args) throws URISyntaxException, IOException {
-    SkiingHazard hazard = new SkiingHazard();
+    TobogganTrajectory hazard = new TobogganTrajectory(Defaults.FILENAME);
     System.out.println(hazard.trees(slopes1));
     System.out.println(hazard.trees(slopes2));
   }
 
-  private long trees(int[][] slopes) {
+  public long trees(int[][] slopes) {
     long product = 1;
     for (int[] slope : slopes) {
       int right = slope[0];

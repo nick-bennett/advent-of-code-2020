@@ -15,6 +15,7 @@
  */
 package com.nickbenn.advent.day6;
 
+import com.nickbenn.advent.util.Defaults;
 import com.nickbenn.advent.util.Parser;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -22,24 +23,28 @@ import java.util.BitSet;
 import java.util.Collection;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class DeclarationFormCheck {
+public class CustomCustoms {
 
-  private static final Pattern GROUP_DELIMITER = Pattern.compile("\\n\\s*\\n");
   private static final Pattern PERSON_DELIMITER = Pattern.compile("\\s*\\n\\s*");
   private static final String WHITESPACE = "\\s+";
 
   private final Collection<String> groups;
 
-  public DeclarationFormCheck() throws IOException, URISyntaxException {
-    groups = new Parser.Builder(getClass())
-        .build()
-        .lineGroupStream()
-        .collect(Collectors.toList());
+  public CustomCustoms(String filename) throws IOException, URISyntaxException {
+    try (
+        Stream<String> stream = new Parser.Builder(getClass().getResource(filename).toURI())
+            .build()
+            .lineGroupStream()
+    ) {
+      groups = stream
+          .collect(Collectors.toList());
+    }
   }
 
   public static void main(String[] args) throws URISyntaxException, IOException {
-    DeclarationFormCheck check = new DeclarationFormCheck();
+    CustomCustoms check = new CustomCustoms(Defaults.FILENAME);
     System.out.println(check.responseUnion());
     System.out.println(check.responseIntersection());
   }
@@ -60,7 +65,7 @@ public class DeclarationFormCheck {
             .map((person) -> person.chars()
                 .collect(BitSet::new, BitSet::set, BitSet::or)
             )
-            .collect(DeclarationFormCheck::intersectionBase, BitSet::and, BitSet::and)
+            .collect(CustomCustoms::intersectionBase, BitSet::and, BitSet::and)
             .cardinality()
         )
         .sum();

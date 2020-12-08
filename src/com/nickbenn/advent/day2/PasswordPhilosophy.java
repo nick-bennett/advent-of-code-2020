@@ -15,32 +15,36 @@
  */
 package com.nickbenn.advent.day2;
 
+import com.nickbenn.advent.util.Defaults;
 import com.nickbenn.advent.util.Parser;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class PasswordCheck {
+public class PasswordPhilosophy {
 
   private final List<PasswordEntry> entries;
 
-  public PasswordCheck() throws IOException, URISyntaxException {
-    entries = new Parser.Builder(getClass())
-        .build()
-        .lineStream()
-        .map(PasswordEntry::new)
-        .collect(Collectors.toUnmodifiableList());
-    ;
+  public PasswordPhilosophy(String filename) throws IOException, URISyntaxException {
+    try (
+        Stream<String> stream = new Parser.Builder(getClass().getResource(filename).toURI())
+            .build()
+            .lineStream()
+    ) {
+      entries = stream.map(PasswordEntry::new)
+          .collect(Collectors.toUnmodifiableList());
+    }
   }
 
   public static void main(String[] args) throws URISyntaxException, IOException {
-    PasswordCheck check = new PasswordCheck();
-    System.out.println(check.getValidByCount());
-    System.out.println(check.getValidByPosition());
+    PasswordPhilosophy check = new PasswordPhilosophy(Defaults.FILENAME);
+    System.out.println(check.countValidByCount());
+    System.out.println(check.countValidByPosition());
   }
 
-  private long getValidByCount() throws IOException {
+  public long countValidByCount() throws IOException {
     return entries.stream()
         .filter((entry) -> {
           String password = entry.getPassword();
@@ -50,7 +54,7 @@ public class PasswordCheck {
         .count();
   }
 
-  private long getValidByPosition() throws IOException {
+  public long countValidByPosition() throws IOException {
     return entries.stream()
         .filter((entry) -> {
           char[] password = entry.getPassword().toCharArray();

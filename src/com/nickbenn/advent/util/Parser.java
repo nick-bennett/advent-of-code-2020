@@ -16,6 +16,7 @@
 package com.nickbenn.advent.util;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -42,7 +43,7 @@ public class Parser {
   }
 
   public Stream<String> lineStream() throws IOException {
-    return rawStream()
+    return rawLines()
         .map((line) -> trimmed ? line.trim() : line)
         .filter((line) -> !(stripped && line.isEmpty()));
   }
@@ -63,8 +64,9 @@ public class Parser {
   }
 
   public BitSet bitSet() throws IOException {
-    return intStream()
-        .collect(BitSet::new, BitSet::set, BitSet::or);
+    try (IntStream stream = intStream()) {
+      return stream.collect(BitSet::new, BitSet::set, BitSet::or);
+    }
   }
 
   public String rawString() throws IOException {
@@ -72,13 +74,13 @@ public class Parser {
   }
 
   public String joinedString() throws IOException {
-    return lineStream()
-        .collect(Collectors.joining(""));
+    return joinedString("");
   }
 
   public String joinedString(CharSequence delimiter) throws IOException {
-    return lineStream()
-        .collect(Collectors.joining(delimiter));
+    try (Stream<String> stream = lineStream()) {
+      return stream.collect(Collectors.joining(delimiter));
+    }
   }
 
   public Stream<String> lineGroupStream() throws IOException {
@@ -87,26 +89,19 @@ public class Parser {
         .filter((line) -> !(stripped && line.isEmpty()));
   }
 
-  private Stream<String> rawStream() throws IOException {
+  private Stream<String> rawLines() throws IOException {
     return Files.lines(path);
   }
 
   public static class Builder {
 
-    public static final String DEFAULT_FILENAME = "input.txt";
 
-    private final Class<?> clazz;
-    private String filename = DEFAULT_FILENAME;
+    private final URI uri;
     private boolean trimmed;
     private boolean stripped;
 
-    public Builder(Class<?> clazz) {
-      this.clazz = clazz;
-    }
-
-    public Builder setFilename(String filename) {
-      this.filename = filename;
-      return this;
+    public Builder(URI uri) {
+      this.uri = uri;
     }
 
     public Builder setTrimmed(boolean trimmed) {
@@ -120,7 +115,7 @@ public class Parser {
     }
 
     public Parser build() throws URISyntaxException, IOException {
-      return new Parser(Path.of(clazz.getResource(filename).toURI()), trimmed, stripped);
+      return new Parser(Path.of(uri), trimmed, stripped);
     }
 
   }

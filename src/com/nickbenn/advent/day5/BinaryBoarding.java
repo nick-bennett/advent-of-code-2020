@@ -15,37 +15,43 @@
  */
 package com.nickbenn.advent.day5;
 
+import com.nickbenn.advent.util.Defaults;
 import com.nickbenn.advent.util.Parser;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.NoSuchElementException;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
-public class BoardingPassCheck {
+public class BinaryBoarding {
 
   private final int[] ids;
 
-  public BoardingPassCheck() throws IOException, URISyntaxException {
-    ids = new Parser.Builder(getClass())
-        .build()
-        .lineStream()
-        .mapToInt(BoardingPassCheck::getId)
-        .toArray();;
+  public BinaryBoarding(String filename) throws IOException, URISyntaxException {
+    try (
+        Stream<String> stream = new Parser.Builder(getClass().getResource(filename).toURI())
+            .build()
+            .lineStream()
+    ) {
+      ids = stream
+          .mapToInt(BinaryBoarding::getId)
+          .toArray();
+    }
   }
 
   public static void main(String[] args) throws URISyntaxException, IOException {
-    BoardingPassCheck check = new BoardingPassCheck();
+    BinaryBoarding check = new BinaryBoarding(Defaults.FILENAME);
     System.out.println(check.max());
     System.out.println(check.missing());
   }
 
-  private int max() {
+  public int max() {
     return IntStream.of(ids)
         .max()
         .orElseThrow(NoSuchElementException::new);
   }
 
-  private int missing() {
+  public int missing() {
     return 1 + IntStream.of(ids)
         .sorted()
         .reduce((a, b) -> (b - a > 1) ? a : b)
