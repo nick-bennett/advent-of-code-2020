@@ -35,9 +35,9 @@ public class ReportRepair {
   }
 
   public static void main(String[] args) throws URISyntaxException, IOException {
-    ReportRepair check = new ReportRepair(Defaults.FILENAME);
-    System.out.println(check.dualSumProduct());
-    System.out.println(check.tripleSumProduct());
+    ReportRepair reportRepair = new ReportRepair(Defaults.FILENAME);
+    System.out.println(reportRepair.dualSumProduct());
+    System.out.println(reportRepair.tripleSumProduct());
   }
 
   public int dualSumProduct() {

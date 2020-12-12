@@ -13,28 +13,26 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.nickbenn.advent.day9;
+package com.nickbenn.advent.day6;
 
-import com.nickbenn.advent.util.Defaults;
-import com.nickbenn.advent.util.Parser;
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.stream.Stream;
+import org.junit.jupiter.api.Test;
 
-public class Main {
+class CustomCustomsTest {
 
-  public Main(String filename) throws URISyntaxException, IOException {
-    try (
-        Stream<String> stream = new Parser.Builder(getClass().getResource(filename).toURI())
-            .build()
-            .lineStream()
-    ) {
-
-    }
+  @Test
+  void responseUnion() throws IOException, URISyntaxException {
+    CustomCustoms customs = new CustomCustoms("test.txt");
+    assertEquals(11, customs.responseUnion());
   }
 
-  public static void main(String[] args) throws IOException, URISyntaxException {
-    Main main = new Main(Defaults.FILENAME);
+  @Test
+  void responseIntersection() throws IOException, URISyntaxException {
+    CustomCustoms customs = new CustomCustoms("test.txt");
+    assertEquals(6, customs.responseIntersection());
   }
 
 }

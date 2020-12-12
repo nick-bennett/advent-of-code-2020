@@ -49,9 +49,9 @@ public class TobogganTrajectory {
   }
 
   public static void main(String[] args) throws URISyntaxException, IOException {
-    TobogganTrajectory hazard = new TobogganTrajectory(Defaults.FILENAME);
-    System.out.println(hazard.trees(slopes1));
-    System.out.println(hazard.trees(slopes2));
+    TobogganTrajectory trajectory = new TobogganTrajectory(Defaults.FILENAME);
+    System.out.println(trajectory.trees(slopes1));
+    System.out.println(trajectory.trees(slopes2));
   }
 
   public long trees(int[][] slopes) {

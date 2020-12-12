@@ -25,10 +25,11 @@ import java.util.stream.Stream;
 
 public class HandyHaversacks {
 
+  public static final String SUBJECT_BAG_NAME = "shiny gold";
+
   private static final Pattern CONTAINER_PATTERN = Pattern.compile("^(\\S+\\s+\\S+)(?=\\s+bags?)");
   private static final Pattern COMPONENT_PATTERN = Pattern
       .compile("(\\d+)\\s+(\\S+\\s+\\S+)(?=\\s+bags?)");
-  private static final String SUBJECT_BAG_NAME = "shiny gold";
 
   public HandyHaversacks(String filename) throws IOException, URISyntaxException {
     try (
@@ -52,9 +53,9 @@ public class HandyHaversacks {
   }
 
   public static void main(String[] args) throws IOException, URISyntaxException {
-    HandyHaversacks graph = new HandyHaversacks(Defaults.FILENAME);
-    System.out.println(graph.countContainers(SUBJECT_BAG_NAME));
-    System.out.println(graph.countComponents(SUBJECT_BAG_NAME));
+    HandyHaversacks haversacks = new HandyHaversacks(Defaults.FILENAME);
+    System.out.println(haversacks.countContainers(SUBJECT_BAG_NAME));
+    System.out.println(haversacks.countComponents(SUBJECT_BAG_NAME));
   }
 
   public int countContainers(String bagName) {

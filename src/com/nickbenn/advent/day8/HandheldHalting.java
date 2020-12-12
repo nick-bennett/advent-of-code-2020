@@ -43,9 +43,9 @@ public class HandheldHalting {
   }
 
   public static void main(String[] args) throws IOException, URISyntaxException {
-    HandheldHalting check = new HandheldHalting(Defaults.FILENAME);
-    System.out.println(check.executeUntilLoop());
-    System.out.println(check.findAndFix());
+    HandheldHalting handheldHalting = new HandheldHalting(Defaults.FILENAME);
+    System.out.println(handheldHalting.executeUntilLoop());
+    System.out.println(handheldHalting.findAndFix());
   }
 
   public InterpreterState executeUntilLoop() {
@@ -82,7 +82,7 @@ public class HandheldHalting {
     throw new IllegalStateException();
   }
 
-  public InterpreterState execute() throws LoopException {
+  private InterpreterState execute() throws LoopException {
     Set<Integer> executed = new HashSet<>();
     InterpreterState state = new InterpreterState();
     while (state.getInstructionPointer() < instructions.size()) {
@@ -94,11 +94,11 @@ public class HandheldHalting {
     return state;
   }
 
-  public void step(InterpreterState state) {
+  private void step(InterpreterState state) {
     instructions.get(state.getInstructionPointer()).execute(state);
   }
 
-  public static class LoopException extends Exception {
+  private static class LoopException extends Exception {
 
     private static final String MESSAGE = "Infinite loop detected";
 
@@ -106,11 +106,6 @@ public class HandheldHalting {
 
     public LoopException(InterpreterState state) {
       super(MESSAGE);
-      this.state = state;
-    }
-
-    public LoopException(InterpreterState state, Throwable cause) {
-      super(MESSAGE, cause);
       this.state = state;
     }
 

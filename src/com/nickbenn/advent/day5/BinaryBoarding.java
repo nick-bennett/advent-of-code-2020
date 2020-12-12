@@ -58,7 +58,7 @@ public class BinaryBoarding {
         .orElseThrow(NoSuchElementException::new);
   }
 
-  private static int getId(String assignment) {
+  public static int getId(String assignment) {
     return assignment.chars()
         .map((c) -> (c == 'R' || c == 'B') ? 1 : 0)
         .reduce((a, b) -> (a << 1) + b)

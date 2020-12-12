@@ -44,9 +44,9 @@ public class CustomCustoms {
   }
 
   public static void main(String[] args) throws URISyntaxException, IOException {
-    CustomCustoms check = new CustomCustoms(Defaults.FILENAME);
-    System.out.println(check.responseUnion());
-    System.out.println(check.responseIntersection());
+    CustomCustoms customs = new CustomCustoms(Defaults.FILENAME);
+    System.out.println(customs.responseUnion());
+    System.out.println(customs.responseIntersection());
   }
 
   public int responseUnion() {

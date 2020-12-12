@@ -66,9 +66,9 @@ public class PassportProcessing {
   }
 
   public static void main(String[] args) throws URISyntaxException, IOException {
-    PassportProcessing check = new PassportProcessing(Defaults.FILENAME);
-    System.out.println(check.basicValidation());
-    System.out.println(check.advancedValidation());
+    PassportProcessing processing = new PassportProcessing(Defaults.FILENAME);
+    System.out.println(processing.basicValidation());
+    System.out.println(processing.advancedValidation());
   }
 
   public long basicValidation() {

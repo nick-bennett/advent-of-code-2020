@@ -89,6 +89,11 @@ public class Parser {
         .filter((line) -> !(stripped && line.isEmpty()));
   }
 
+  public Stream<char[]> charArrayStream() throws IOException {
+    return lineStream()
+        .map(String::toCharArray);
+  }
+
   private Stream<String> rawLines() throws IOException {
     return Files.lines(path);
   }
