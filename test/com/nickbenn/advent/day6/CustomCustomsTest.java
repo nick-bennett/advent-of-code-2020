@@ -17,6 +17,7 @@ package com.nickbenn.advent.day6;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.nickbenn.advent.util.Defaults;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import org.junit.jupiter.api.Test;
@@ -25,13 +26,13 @@ class CustomCustomsTest {
 
   @Test
   void responseUnion() throws IOException, URISyntaxException {
-    CustomCustoms customs = new CustomCustoms("test.txt");
+    CustomCustoms customs = new CustomCustoms(Defaults.TEST_FILENAME);
     assertEquals(11, customs.responseUnion());
   }
 
   @Test
   void responseIntersection() throws IOException, URISyntaxException {
-    CustomCustoms customs = new CustomCustoms("test.txt");
+    CustomCustoms customs = new CustomCustoms(Defaults.TEST_FILENAME);
     assertEquals(6, customs.responseIntersection());
   }
 

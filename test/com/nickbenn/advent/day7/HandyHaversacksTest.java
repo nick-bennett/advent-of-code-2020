@@ -17,6 +17,7 @@ package com.nickbenn.advent.day7;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.nickbenn.advent.util.Defaults;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import org.junit.jupiter.api.Test;
@@ -25,13 +26,13 @@ class HandyHaversacksTest {
 
   @Test
   void countContainers() throws IOException, URISyntaxException {
-    HandyHaversacks haversacks = new HandyHaversacks("test.txt");
+    HandyHaversacks haversacks = new HandyHaversacks(Defaults.TEST_FILENAME);
     assertEquals(4, haversacks.countContainers(HandyHaversacks.SUBJECT_BAG_NAME));
   }
 
   @Test
   void countComponents() throws IOException, URISyntaxException {
-    HandyHaversacks haversacks = new HandyHaversacks("test.txt");
+    HandyHaversacks haversacks = new HandyHaversacks(Defaults.TEST_FILENAME);
     assertEquals(32, haversacks.countComponents(HandyHaversacks.SUBJECT_BAG_NAME));
   }
 

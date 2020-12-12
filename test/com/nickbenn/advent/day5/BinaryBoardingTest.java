@@ -17,13 +17,14 @@ package com.nickbenn.advent.day5;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.nickbenn.advent.util.Defaults;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
 
 class BinaryBoardingTest {
 
   @ParameterizedTest
-  @CsvFileSource(resources = "test.txt", numLinesToSkip = 1)
+  @CsvFileSource(resources = Defaults.TEST_FILENAME, numLinesToSkip = 1)
   void getId(String assignment, int expected) {
     assertEquals(expected, BinaryBoarding.getId(assignment));
   }

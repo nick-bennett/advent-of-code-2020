@@ -17,6 +17,7 @@ package com.nickbenn.advent.day8;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.nickbenn.advent.util.Defaults;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import org.junit.jupiter.api.Test;
@@ -25,13 +26,13 @@ class HandheldHaltingTest {
 
   @Test
   void executeUntilLoop() throws IOException, URISyntaxException {
-    HandheldHalting handheldHalting = new HandheldHalting("test.txt");
+    HandheldHalting handheldHalting = new HandheldHalting(Defaults.TEST_FILENAME);
     assertEquals(5, handheldHalting.executeUntilLoop().getRegisters().get("accumulator"));
   }
 
   @Test
   void findAndFix() throws IOException, URISyntaxException {
-    HandheldHalting handheldHalting = new HandheldHalting("test.txt");
+    HandheldHalting handheldHalting = new HandheldHalting(Defaults.TEST_FILENAME);
     assertEquals(8, handheldHalting.findAndFix().getRegisters().get("accumulator"));
   }
 

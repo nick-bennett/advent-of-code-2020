@@ -17,6 +17,7 @@ package com.nickbenn.advent.day12;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.nickbenn.advent.util.Defaults;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import org.junit.jupiter.api.Test;
@@ -25,13 +26,13 @@ class RainRiskTest {
 
   @Test
   void shipCentricDistance() throws IOException, URISyntaxException {
-    RainRisk rainRisk = new RainRisk("test.txt");
+    RainRisk rainRisk = new RainRisk(Defaults.TEST_FILENAME);
     assertEquals(25, rainRisk.basicDistance());
   }
 
   @Test
   void waypointCentricDistance() throws IOException, URISyntaxException {
-    RainRisk rainRisk = new RainRisk("test.txt");
+    RainRisk rainRisk = new RainRisk(Defaults.TEST_FILENAME);
     assertEquals(286, rainRisk.waypointDistance());
   }
 

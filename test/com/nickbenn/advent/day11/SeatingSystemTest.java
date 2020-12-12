@@ -17,6 +17,7 @@ package com.nickbenn.advent.day11;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.nickbenn.advent.util.Defaults;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import org.junit.jupiter.api.Test;
@@ -25,13 +26,13 @@ class SeatingSystemTest {
 
   @Test
   void countMooreStablePopulation() throws IOException, URISyntaxException {
-    SeatingSystem seatingSystem = new SeatingSystem("test.txt");
+    SeatingSystem seatingSystem = new SeatingSystem(Defaults.TEST_FILENAME);
     assertEquals(37, seatingSystem.countMooreStablePopulation());
   }
 
   @Test
   void countLineOfSightStablePopulation() throws IOException, URISyntaxException {
-    SeatingSystem seatingSystem = new SeatingSystem("test.txt");
+    SeatingSystem seatingSystem = new SeatingSystem(Defaults.TEST_FILENAME);
     assertEquals(26, seatingSystem.countLineOfSightStablePopulation());
   }
 

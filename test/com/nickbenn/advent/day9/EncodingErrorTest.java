@@ -17,6 +17,7 @@ package com.nickbenn.advent.day9;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.nickbenn.advent.util.Defaults;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import org.junit.jupiter.api.Test;
@@ -25,14 +26,14 @@ class EncodingErrorTest {
 
   @Test
   void firstInvalid() throws IOException, URISyntaxException {
-    EncodingError encodingError = new EncodingError("test.txt", 5);
+    EncodingError encodingError = new EncodingError(Defaults.TEST_FILENAME, 5);
     long badValue = encodingError.firstInvalid();
     assertEquals(127, badValue);
   }
 
   @Test
   void bracketSum() throws IOException, URISyntaxException {
-    EncodingError encodingError = new EncodingError("test.txt", 5);
+    EncodingError encodingError = new EncodingError(Defaults.TEST_FILENAME, 5);
     assertEquals(62, encodingError.bracketSum(127));
   }
 
