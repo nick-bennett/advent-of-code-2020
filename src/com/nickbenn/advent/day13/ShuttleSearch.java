@@ -88,9 +88,6 @@ public class ShuttleSearch {
           .longValue();
       baseline += inverse * gap % difference * intervals[i] - offsets[i];
       difference = intervals[i] * difference;
-      if (baseline < 0) {
-        baseline += difference;
-      }
     }
     return baseline;
   }
