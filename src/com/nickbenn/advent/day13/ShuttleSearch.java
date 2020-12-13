@@ -77,6 +77,7 @@ public class ShuttleSearch {
   }
 
   public long getOffsetSynchTimestamp() {
+    // Assume that all of the numbers are relative primes; none of this works otherwise.
     long baseline = 0;
     long difference = intervals[0];
     for (int i = 1; i < intervals.length; i++) {
@@ -86,10 +87,7 @@ public class ShuttleSearch {
           .modInverse(BigInteger.valueOf(difference))
           .longValue();
       baseline += inverse * gap % difference * intervals[i] - offsets[i];
-      long gcd = BigInteger.valueOf(intervals[i])
-          .gcd(BigInteger.valueOf(difference))
-          .longValue();
-      difference = intervals[i] * difference / gcd;
+      difference = intervals[i] * difference;
       if (baseline < 0) {
         baseline += difference;
       }
