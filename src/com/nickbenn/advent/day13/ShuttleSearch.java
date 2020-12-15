@@ -83,13 +83,42 @@ public class ShuttleSearch {
     for (int i = 1; i < intervals.length; i++) {
       long gap = offsets[i] + baseline % intervals[i];
       baseline -= baseline % intervals[i];
-      long inverse = BigInteger.valueOf(intervals[i])
-          .modInverse(BigInteger.valueOf(difference))
-          .longValue();
-      baseline += inverse * gap % difference * intervals[i] - offsets[i];
+//      long inverse = BigInteger.valueOf(intervals[i])
+//          .modInverse(BigInteger.valueOf(difference))
+//          .longValue();
+//      baseline += inverse * gap % difference * intervals[i] - offsets[i];
+      baseline += modDivide(gap, intervals[i], difference) * intervals[i] - offsets[i];
       difference = intervals[i] * difference;
     }
     return baseline;
+  }
+
+  public long modDivide(long dividend, long divisor, long modulus) {
+    // See https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm#Description and
+    // https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm#Example
+    long result;
+    dividend %= modulus;
+    long remainder = modulus;
+    long previousRemainder = divisor;
+    long coefficient = 0;
+    long previousCoefficient = 1;
+    while (remainder != dividend && remainder > 1) {
+      long quotient = previousRemainder / remainder;
+      long nextRemainder = previousRemainder % remainder;
+      long nextProduct = previousCoefficient - quotient * coefficient;
+      previousRemainder = remainder;
+      remainder = nextRemainder;
+      previousCoefficient = coefficient;
+      coefficient = nextProduct;
+    }
+    if (remainder == dividend) {
+      result = (coefficient > 0) ? coefficient : modulus + coefficient;
+    } else if (remainder == 1) {
+      result = (coefficient * dividend) % modulus;
+    } else {
+      throw new ArithmeticException();
+    }
+    return result;
   }
 
 }
