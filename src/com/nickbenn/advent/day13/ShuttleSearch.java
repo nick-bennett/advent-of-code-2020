@@ -29,6 +29,8 @@ import java.util.stream.Stream;
 public class ShuttleSearch {
 
   private static final Pattern INTERVAL_SPLITTER = Pattern.compile("\\s*,\\s*");
+  private static final String MOD_DIVIDE_FAILURE_MESSAGE = "Divisor and modulus are not coprime, "
+      + "and dividend was not reached using the extended Euclidean algorithm.";
 
   private final int threshold;
   private final int[] intervals;
@@ -83,11 +85,11 @@ public class ShuttleSearch {
     for (int i = 1; i < intervals.length; i++) {
       long gap = offsets[i] + baseline % intervals[i];
       baseline -= baseline % intervals[i];
-//      long inverse = BigInteger.valueOf(intervals[i])
-//          .modInverse(BigInteger.valueOf(difference))
-//          .longValue();
-//      baseline += inverse * gap % difference * intervals[i] - offsets[i];
-      baseline += modDivide(gap, intervals[i], difference) * intervals[i] - offsets[i];
+      long inverse = BigInteger.valueOf(intervals[i])
+          .modInverse(BigInteger.valueOf(difference))
+          .longValue();
+      baseline += inverse * gap % difference * intervals[i] - offsets[i];
+//      baseline += modDivide(gap, intervals[i], difference) * intervals[i] - offsets[i];
       difference = intervals[i] * difference;
     }
     return baseline;
@@ -116,7 +118,7 @@ public class ShuttleSearch {
     } else if (remainder == 1) {
       result = (coefficient * dividend) % modulus;
     } else {
-      throw new ArithmeticException();
+      throw new ArithmeticException(MOD_DIVIDE_FAILURE_MESSAGE);
     }
     return result;
   }
