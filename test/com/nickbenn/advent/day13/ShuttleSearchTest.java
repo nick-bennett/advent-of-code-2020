@@ -20,20 +20,36 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.nickbenn.advent.util.Defaults;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
 class ShuttleSearchTest {
 
+  static final int THRESHOLD = 939;
+  static final Integer[] routeLengths = {7, 13, null, null, 59, null, 31, 19};
+  static final List<Integer> ROUTE_LENGTHS;
+
+  static {
+    //noinspection FuseStreamOperations
+    ROUTE_LENGTHS = Collections.unmodifiableList(
+        Arrays.stream(routeLengths)
+            .collect(Collectors.toList())
+    );
+  }
+
   @Test
   void getMinWaitProduct() throws IOException, URISyntaxException {
-    ShuttleSearch shuttleSearch = new ShuttleSearch(Defaults.TEST_FILENAME);
-    assertEquals(295, shuttleSearch.getMinWaitProduct());
+    assertEquals(295, ShuttleSearch.getMinWaitProduct(THRESHOLD, ROUTE_LENGTHS));
   }
 
   @Test
   void getOffsetSynchTimestamp() throws IOException, URISyntaxException {
-    ShuttleSearch shuttleSearch = new ShuttleSearch(Defaults.TEST_FILENAME);
-    assertEquals(1068781L, shuttleSearch.getOffsetSynchTimestamp());
+    assertEquals(1068781L, ShuttleSearch.getOffsetSynchTimestamp(ROUTE_LENGTHS));
   }
 
 }

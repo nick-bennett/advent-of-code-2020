@@ -94,6 +94,12 @@ public class Parser {
         .map(String::toCharArray);
   }
 
+  public String[] lines() throws IOException {
+    try (Stream<String> stream = lineStream()) {
+      return stream.toArray(String[]::new);
+    }
+  }
+
   private Stream<String> rawLines() throws IOException {
     return Files.lines(path);
   }

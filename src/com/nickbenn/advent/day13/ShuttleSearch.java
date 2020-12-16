@@ -20,107 +20,64 @@ import com.nickbenn.advent.util.Parser;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class ShuttleSearch {
 
-  private static final Pattern INTERVAL_SPLITTER = Pattern.compile("\\s*,\\s*");
-  private static final String MOD_DIVIDE_FAILURE_MESSAGE = "Divisor and modulus are not coprime, "
-      + "and dividend was not reached using the extended Euclidean algorithm.";
-
-  private final int threshold;
-  private final int[] intervals;
-  private final int[] offsets;
-
-  public ShuttleSearch(String filename) throws URISyntaxException, IOException {
-    try (
-        Stream<String> stream = new Parser.Builder(getClass().getResource(filename).toURI())
-            .build()
-            .lineStream()
-    ) {
-      String[] lines = stream.toArray(String[]::new);
-      threshold = Integer.parseInt(lines[0]);
-      Integer[] rawIntervals = INTERVAL_SPLITTER.splitAsStream(lines[1])
-          .map((s) -> s.equals("x") ? null : Integer.valueOf(s))
-          .toArray(Integer[]::new);
-      offsets = IntStream.range(0, rawIntervals.length)
-          .mapToObj((i) -> (rawIntervals[i] != null) ? i : null)
-          .filter(Objects::nonNull)
-          .mapToInt(Integer::intValue)
-          .toArray();
-      intervals = Arrays.stream(rawIntervals)
-          .filter(Objects::nonNull)
-          .mapToInt(Integer::intValue)
-          .toArray();
-    }
-  }
+  private static final Pattern ROUTE_LENGTH_SPLITTER = Pattern.compile("\\s*,\\s*");
+  private static final String NULL_INPUT_VALUE = "x";
 
   public static void main(String[] args) throws IOException, URISyntaxException {
-    ShuttleSearch shuttleSearch = new ShuttleSearch(Defaults.FILENAME);
-    System.out.println(shuttleSearch.getMinWaitProduct());
-    System.out.println(shuttleSearch.getOffsetSynchTimestamp());
+    List<String> input =
+        Files.readAllLines(Path.of(ShuttleSearch.class.getResource(Defaults.FILENAME).toURI()));
+    int threshold = Integer.parseInt(input.get(0));
+    List<Integer> routeLengths = ROUTE_LENGTH_SPLITTER.splitAsStream(input.get(1))
+        .map((value) -> value.equals(NULL_INPUT_VALUE) ? null : Integer.valueOf(value))
+        .collect(Collectors.toList());
+    System.out.println(getMinWaitProduct(threshold, routeLengths));
+    System.out.println(getOffsetSynchTimestamp(routeLengths));
   }
 
-  public int getMinWaitProduct() {
+  public static int getMinWaitProduct(int threshold, List<Integer> routeLengths) {
     int bestInterval = -1;
     int bestWait = Integer.MAX_VALUE;
-    for (int interval : intervals) {
-      int wait = (interval - threshold % interval) % interval;
+    for (Integer length : routeLengths.stream()
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList())) {
+      int wait = length - threshold % length;
       if (wait < bestWait) {
         bestWait = wait;
-        bestInterval = interval;
+        bestInterval = length;
       }
     }
     return bestWait * bestInterval;
   }
 
-  public long getOffsetSynchTimestamp() {
-    // Assume that all of the numbers are relative primes; none of this works otherwise.
+  public static long getOffsetSynchTimestamp(List<Integer> routeLengths) {
     long baseline = 0;
-    long difference = intervals[0];
-    for (int i = 1; i < intervals.length; i++) {
-      long gap = offsets[i] + baseline % intervals[i];
-      baseline -= baseline % intervals[i];
-      long inverse = BigInteger.valueOf(intervals[i])
-          .modInverse(BigInteger.valueOf(difference))
-          .longValue();
-      baseline += inverse * gap % difference * intervals[i] - offsets[i];
-//      baseline += modDivide(gap, intervals[i], difference) * intervals[i] - offsets[i];
-      difference = intervals[i] * difference;
+    int offset = 0;
+    long cycleLength = routeLengths.get(0);
+    for (Integer length : routeLengths.subList(1, routeLengths.size())) {
+      offset++;
+      if (length != null) {
+        long additionalOffset = baseline % length;
+        long gap = offset + additionalOffset;
+        baseline -= additionalOffset;
+        long inverse =
+            BigInteger.valueOf(length).modInverse(BigInteger.valueOf(cycleLength)).longValue();
+        baseline += inverse * gap % cycleLength * length - offset;
+        cycleLength *= length;
+      }
     }
     return baseline;
-  }
-
-  public long modDivide(long dividend, long divisor, long modulus) {
-    // See https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm#Description and
-    // https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm#Example
-    long result;
-    dividend %= modulus;
-    long remainder = modulus;
-    long previousRemainder = divisor;
-    long coefficient = 0;
-    long previousCoefficient = 1;
-    while (remainder != dividend && remainder > 1) {
-      long quotient = previousRemainder / remainder;
-      long nextRemainder = previousRemainder % remainder;
-      long nextProduct = previousCoefficient - quotient * coefficient;
-      previousRemainder = remainder;
-      remainder = nextRemainder;
-      previousCoefficient = coefficient;
-      coefficient = nextProduct;
-    }
-    if (remainder == dividend) {
-      result = (coefficient > 0) ? coefficient : modulus + coefficient;
-    } else if (remainder == 1) {
-      result = (coefficient * dividend) % modulus;
-    } else {
-      throw new ArithmeticException(MOD_DIVIDE_FAILURE_MESSAGE);
-    }
-    return result;
   }
 
 }
