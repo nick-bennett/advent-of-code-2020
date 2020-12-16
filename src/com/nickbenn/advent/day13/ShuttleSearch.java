@@ -89,7 +89,8 @@ public class ShuttleSearch {
         var gap = offset + additionalOffset;
         baseline -= additionalOffset;
         var inverse = modInverse(length, cycleLength);
-//            BigInteger.valueOf(length).modInverse(BigInteger.valueOf(cycleLength)).longValue();
+//      var inverse =
+//          BigInteger.valueOf(length).modInverse(BigInteger.valueOf(cycleLength)).longValue();
         baseline += inverse * gap % cycleLength * length - offset;
         cycleLength *= length;
       }
