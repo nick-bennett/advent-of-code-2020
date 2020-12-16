@@ -18,7 +18,7 @@ limitations under the License.
 
 
 def main():
-    find_offset_synch_mod_inverse(
+    print(find_offset_synch_mod_inverse(
             [37, None, None, None, None, None, None, None, None, None, None,
              None, None, None, None, None, None, None, None, None, None,
              None,
@@ -31,12 +31,12 @@ def main():
              None,
              431, None, None, None, None, None, None, None, None, None,
              None,
-             None, None, None, None, None, None, None, None, 19])
+             None, None, None, None, None, None, None, None, 19]))
 
 
-def mod_inverse(a, b):
-    prev_r = a
-    r = b
+def mod_inverse(value, modulus):
+    prev_r = value
+    r = modulus
     prev_s = 1
     s = 0
     while r != 1:
@@ -45,8 +45,8 @@ def mod_inverse(a, b):
         prev_s, s = s, prev_s - quotient * s
         if r == 0:
             raise ValueError("{0} is not invertible for modulus {1}"
-                             .format(a, b))
-    return s if s > 0 else b + s
+                             .format(value, modulus))
+    return s if s > 0 else modulus + s
 
 
 def find_offset_synch_mod_inverse(route_lengths):
