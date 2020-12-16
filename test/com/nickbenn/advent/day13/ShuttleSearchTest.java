@@ -49,7 +49,7 @@ class ShuttleSearchTest {
 
   @Test
   void getOffsetSynchTimestamp() throws IOException, URISyntaxException {
-    assertEquals(1068781L, ShuttleSearch.getOffsetSynchTimestamp(ROUTE_LENGTHS));
+    assertEquals(1068781L, ShuttleSearch.findOffsetSynchSmartForce(ROUTE_LENGTHS));
   }
 
 }
