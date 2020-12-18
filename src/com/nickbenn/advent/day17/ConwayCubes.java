@@ -84,7 +84,7 @@ public class ConwayCubes {
     Set<Cell> next = new TreeSet<>(REVERSE_DIMENSION_COMPARATOR);
     Set<Cell> inactives = new TreeSet<>(REVERSE_DIMENSION_COMPARATOR);
     for (Cell cell : actives) {
-      Collection<Cell> neighbors = cell.getNeighbors();
+      Set<Cell> neighbors = cell.getNeighbors();
       inactives.addAll(neighbors);
       neighbors.retainAll(actives);
       int size = neighbors.size();
