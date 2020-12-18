@@ -17,27 +17,37 @@ package com.nickbenn.advent.day18;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.nickbenn.advent.day18.Expression.Operator;
 import com.nickbenn.advent.util.Defaults;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
 
 class ExpressionTest {
 
-  static final Map<Character, Integer> FLAT_PRIORITIES = Map.of('+', 1, '-', 1, '*', 1, '/', 1);
-  static final Map<Character, Integer> WEIRD_PRIORITIES = Map.of('+', 2, '-', 2, '*', 1, '/', 1);
+  static final Collection<Operator> FLAT = List.of(
+      new Operator('+', 1, Long::sum),
+      new Operator('*', 1, (a, b) -> a * b)
+  );
+
+  static final Collection<Operator> WEIRD = List.of(
+      new Operator('+', 2, Long::sum),
+      new Operator('*', 1, (a, b) -> a * b)
+  );
 
   @ParameterizedTest
   @CsvFileSource(resources = "test1.txt", numLinesToSkip = 1)
   void getValue_flatPriorities(String input, int expected) {
-    Expression expression = new Expression(input, FLAT_PRIORITIES);
+    Expression expression = new Expression(input, FLAT);
     assertEquals(expected, expression.getValue());
   }
 
   @ParameterizedTest
   @CsvFileSource(resources = "test2.txt", numLinesToSkip = 1)
   void getValue_weirdPriorities(String input, int expected) {
-    Expression expression = new Expression(input, WEIRD_PRIORITIES);
+    Expression expression = new Expression(input, WEIRD);
     assertEquals(expected, expression.getValue());
   }
 

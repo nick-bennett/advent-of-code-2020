@@ -15,33 +15,40 @@
  */
 package com.nickbenn.advent.day18;
 
+import java.util.Collection;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.function.BinaryOperator;
+import java.util.stream.Collectors;
 
 public class Expression {
 
+  private static final char SUB_EXPRESSION_START = '(';
+  private static final char SUB_EXPRESSION_END = ')';
+
   private final String input;
-  private final Map<Character, Integer> priorities;
+  private final Map<Character, Operator> operatorMap;
   private int position;
   private final char[] chars;
   private final Deque<Long> operands;
-  private final Deque<Character> operators;
+  private final Deque<Operator> operators;
 
-  public Expression(String input, Map<Character, Integer> priorities) {
+  public Expression(String input, Collection<Operator> operators) {
     this.input = input;
-    this.priorities = priorities;
+    this.operatorMap = operators.stream()
+        .collect(Collectors.toMap(Operator::getToken, (operator) -> operator));
     position = 0;
     chars = input.toCharArray();
     operands = new LinkedList<>();
-    operators = new LinkedList<>();
+    this.operators = new LinkedList<>();
   }
 
   public long getValue() {
     operands.push(nextOperand());
-    Character operator;
+    Operator operator;
     while ((operator = nextOperator()) != null) {
-      processStacks(priorities.get(operator));
+      processStacks(operator.getPriority());
       operators.push(operator);
       operands.push(nextOperand());
     }
@@ -67,10 +74,10 @@ public class Expression {
     } else {
       sign = 1;
     }
-    if (chars[position] == '(') {
-      position++;
-      int end = findClosingParenthesis(position);
-      Expression nested = new Expression(input.substring(position, end).trim(), priorities);
+    if (chars[position] == SUB_EXPRESSION_START) {
+      int end = findSubExpressionEnd(++position);
+      Expression nested =
+          new Expression(input.substring(position, end).trim(), operatorMap.values());
       value = nested.getValue();
       position = end + 1;
     } else {
@@ -84,46 +91,40 @@ public class Expression {
     return sign * value;
   }
 
-  private Character nextOperator() {
-    Character next;
+  private Operator nextOperator() {
+    Operator next;
     skipWhitespace();
     if (position >= chars.length) {
       next = null;
-    } else if (chars[position] == ')') {
-      next = null;
-      position++;
-    } else if (priorities.containsKey(chars[position])) {
-      next = chars[position];
+    } else if (operatorMap.containsKey(chars[position])) {
+      next = operatorMap.get(chars[position]);
       position++;
     } else {
-      throw new IllegalArgumentException();
+      throw new UnexpectedTokenException();
     }
     return next;
   }
 
   private void processStacks(int priority) {
-    while (!operators.isEmpty() && priorities.get(operators.peek()) >= priority) {
-      char operator = operators.pop();
-      long operand2 = operands.pop();
-      long operand1 = operands.pop();
-      switch (operator) {
-        case '+':
-          operand1 += operand2;
-          break;
-        case '*':
-          operand1 *= operand2;
-          break;
-        case '-':
-          operand1 -= operand2;
-          break;
-        case '/':
-          operand1 /= operand2;
-          break;
-        default:
-          throw new IllegalArgumentException();
-      }
-      operands.push(operand1);
+    while (!operators.isEmpty() && operators.peek().getPriority() >= priority) {
+      Operator operator = operators.pop();
+      Long operand2 = operands.pop();
+      Long operand1 = operands.pop();
+      long result = operator.compute(operand1, operand2);
+      this.operands.push(result);
     }
+  }
+
+  private int findSubExpressionEnd(int start) {
+    int level = 1;
+    for (int i = start; i < chars.length; i++) {
+      if (chars[i] == SUB_EXPRESSION_START) {
+        level++;
+      } else if (chars[i] == SUB_EXPRESSION_END && --level == 0) {
+        return i;
+      }
+    }
+    throw new UnterminatedSubExpressionException();
   }
 
   private void skipWhitespace() {
@@ -132,16 +133,52 @@ public class Expression {
     }
   }
 
-  private int findClosingParenthesis(int start) {
-    int level = 1;
-    for (int i = start; i < chars.length; i++) {
-      if (chars[i] == '(') {
-        level++;
-      } else if (chars[i] == ')' && --level == 0) {
-        return i;
-      }
+  public static class Operator {
+
+    private final char token;
+    private final int priority;
+    private final BinaryOperator<Long> operation;
+
+    public Operator(char token, int priority, BinaryOperator<Long> operation) {
+      this.token = token;
+      this.priority = priority;
+      this.operation = operation;
     }
-    throw new IllegalArgumentException();
+
+    public char getToken() {
+      return token;
+    }
+
+    public int getPriority() {
+      return priority;
+    }
+
+    public long compute(Long operand1, Long operand2) {
+      return operation.apply(operand1, operand2);
+    }
+
+  }
+
+  public class UnexpectedTokenException extends IllegalArgumentException {
+
+    public static final String MESSAGE_FORMAT =
+        "Unexpected token '%s' found at position %d in \"%s\".";
+
+    public UnexpectedTokenException() {
+      super(String.format(MESSAGE_FORMAT, input.charAt(position), position, input));
+    }
+
+  }
+
+  public class UnterminatedSubExpressionException extends IllegalArgumentException {
+
+    public static final String MESSAGE_FORMAT =
+        "Sub-expression started at position %d in \"%s\" not terminated.";
+
+    public UnterminatedSubExpressionException() {
+      super(String.format(MESSAGE_FORMAT, position, input));
+    }
+
   }
 
 }

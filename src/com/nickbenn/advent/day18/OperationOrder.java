@@ -15,24 +15,27 @@
  */
 package com.nickbenn.advent.day18;
 
+import com.nickbenn.advent.day18.Expression.Operator;
 import com.nickbenn.advent.util.Defaults;
 import com.nickbenn.advent.util.Parser;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.net.URISyntaxException;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class OperationOrder {
 
-  private static final Map<Character, Integer> FLAT_PRIORITIES =
-      Map.of('+', 1, '-', 1, '*', 1, '/', 1);
-  private static final Map<Character, Integer> WEIRD_PRIORITIES =
-      Map.of('+', 2, '-', 2, '*', 1, '/', 1);
+  private static final Collection<Operator> FLAT = List.of(
+      new Operator('+', 1, Long::sum),
+      new Operator('*', 1, (a, b) -> a * b)
+  );
+
+  private static final Collection<Operator> WEIRD = List.of(
+      new Operator('+', 2, Long::sum),
+      new Operator('*', 1, (a, b) -> a * b)
+  );
 
   private final List<String> lines;
 
@@ -49,14 +52,15 @@ public class OperationOrder {
 
   public static void main(String[] args) throws IOException, URISyntaxException {
     OperationOrder operationOrder = new OperationOrder(Defaults.FILENAME);
-    System.out.println(operationOrder.getSum(FLAT_PRIORITIES));
-    System.out.println(operationOrder.getSum(WEIRD_PRIORITIES));
+    System.out.println(operationOrder.getSum(FLAT));
+    System.out.println(operationOrder.getSum(WEIRD));
   }
 
-  public long getSum(Map<Character, Integer> priorities) {
+  public long getSum(Collection<Operator> operators) {
     return lines.stream()
-        .map((line) -> new Expression(line, priorities))
+        .map((line) -> new Expression(line, operators))
         .mapToLong(Expression::getValue)
         .sum();
   }
+
 }
