@@ -29,14 +29,14 @@ class ExpressionTest {
 
   @ParameterizedTest
   @CsvFileSource(resources = "test1.txt", numLinesToSkip = 1)
-  void getValue_flat(String input, int expected) {
+  void getValue_flatPriorities(String input, int expected) {
     Expression expression = new Expression(input, FLAT_PRIORITIES);
     assertEquals(expected, expression.getValue());
   }
 
   @ParameterizedTest
   @CsvFileSource(resources = "test2.txt", numLinesToSkip = 1)
-  void getValue_weird(String input, int expected) {
+  void getValue_weirdPriorities(String input, int expected) {
     Expression expression = new Expression(input, WEIRD_PRIORITIES);
     assertEquals(expected, expression.getValue());
   }

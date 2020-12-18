@@ -29,13 +29,9 @@ public class Expression {
   private final Deque<Character> operators;
 
   public Expression(String input, Map<Character, Integer> priorities) {
-    this(input, priorities, 0);
-  }
-
-  private Expression(String input, Map<Character, Integer> priorities, int position) {
     this.input = input;
     this.priorities = priorities;
-    this.position = position;
+    position = 0;
     chars = input.toCharArray();
     operands = new LinkedList<>();
     operators = new LinkedList<>();
@@ -58,40 +54,34 @@ public class Expression {
     return input;
   }
 
-  private int getPosition() {
-    return position;
-  }
-
   private long nextOperand() {
     long value;
     skipWhitespace();
-    if (isExpressionStart()) {
-      Expression nested = new Expression(input, priorities, position + 1);
-      value = nested.getValue();
-      position = nested.getPosition();
-    } else if (isExpressionEnd()) {
-      throw new IllegalArgumentException();
+    int sign;
+    if (chars[position] == '-') {
+      sign = -1;
+      skipWhitespace();
+    } else if (chars[position] == '+') {
+      sign = 1;
+      skipWhitespace();
     } else {
-      int sign;
-      if (chars[position] == '-') {
-        sign = -1;
-        skipWhitespace();
-      } else if (chars[position] == '+') {
-        sign = 1;
-        skipWhitespace();
-      } else if (!Character.isDigit(chars[position])) {
-        throw new IllegalArgumentException();
-      } else {
-        sign = 1;
-      }
-      int endPosition = position + 1;
+      sign = 1;
+    }
+    if (chars[position] == '(') {
+      position++;
+      int end = findClosingParenthesis(position);
+      Expression nested = new Expression(input.substring(position, end).trim(), priorities);
+      value = nested.getValue();
+      position = end + 1;
+    } else {
+      int endPosition = position;
       while (endPosition < chars.length && Character.isDigit(chars[endPosition])) {
         endPosition++;
       }
-      value = sign * Long.parseLong(input, position, endPosition, 10);
+      value = Long.parseLong(input, position, endPosition, 10);
       position = endPosition;
     }
-    return value;
+    return sign * value;
   }
 
   private Character nextOperator() {
@@ -142,12 +132,16 @@ public class Expression {
     }
   }
 
-  private boolean isExpressionStart() {
-    return chars[position] == '(';
-  }
-
-  private boolean isExpressionEnd() {
-    return position >= chars.length || chars[position] == ')';
+  private int findClosingParenthesis(int start) {
+    int level = 1;
+    for (int i = start; i < chars.length; i++) {
+      if (chars[i] == '(') {
+        level++;
+      } else if (chars[i] == ')' && --level == 0) {
+        return i;
+      }
+    }
+    throw new IllegalArgumentException();
   }
 
 }
