@@ -15,31 +15,29 @@
  */
 package com.nickbenn.advent.day19;
 
-import com.nickbenn.advent.util.Defaults;
-import com.nickbenn.advent.util.Parser;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-public class Main {
+class MonsterMessagesTest {
 
-  private final List<String> lines;
-
-  public Main(String filename) throws URISyntaxException, IOException {
-    try (
-        Stream<String> stream = new Parser.Builder(getClass().getResource(filename).toURI())
-            .build()
-            .lineStream()
-    ) {
-      lines = stream
-          .collect(Collectors.toList());
-    }
+  private static Stream<Arguments> countValid() {
+    return Stream.of(
+        Arguments.of("test-rules-1.txt", "test-messages.txt", 3),
+        Arguments.of("test-rules-2.txt", "test-messages.txt", 12)
+    );
   }
 
-  public static void main(String[] args) throws IOException, URISyntaxException {
-    Main main = new Main(Defaults.FILENAME);
+  @ParameterizedTest
+  @MethodSource
+  void countValid(String rulesFile, String messagesFile, long expected)
+      throws IOException, URISyntaxException {
+    assertEquals(expected, new MonsterMessages(rulesFile, messagesFile).countValid());
   }
 
 }
