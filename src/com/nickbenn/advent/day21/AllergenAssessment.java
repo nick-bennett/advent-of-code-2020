@@ -19,8 +19,11 @@ import com.nickbenn.advent.util.Defaults;
 import com.nickbenn.advent.util.Parser;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -37,6 +40,8 @@ public class AllergenAssessment {
 
   private final Map<String, Set<String>> potentialAllergens;
   private final Map<String, Set<String>> potentialIngredients;
+  private final List<Set<String>> ingredientListings;
+  private final List<Set<String>> allergenListings;
 
   public AllergenAssessment(String filename) throws URISyntaxException, IOException {
     try (
@@ -46,6 +51,8 @@ public class AllergenAssessment {
     ) {
       potentialAllergens = new HashMap<>();
       potentialIngredients = new HashMap<>();
+      ingredientListings = new LinkedList<>();
+      allergenListings = new LinkedList<>();
       stream
           .map(LINE_PATTERN::matcher)
           .filter(Matcher::matches)
@@ -54,6 +61,8 @@ public class AllergenAssessment {
                 .collect(Collectors.toSet());
             Set<String> allergens = ALLERGENS_SPLITTER.splitAsStream(matcher.group(2))
                 .collect(Collectors.toSet());
+            ingredientListings.add(ingredients);
+            allergenListings.add(allergens);
             ingredients.forEach((ingredient) -> {
               Set<String> associatedAllergens =
                   potentialAllergens.getOrDefault(ingredient, new HashSet<>());
@@ -62,7 +71,7 @@ public class AllergenAssessment {
             });
             allergens.forEach((allergen) -> {
               Set<String> associatedIngredients =
-                  potentialIngredients.getOrDefault(allergen, ingredients);
+                  potentialIngredients.getOrDefault(allergen, new HashSet<>(ingredients));
               associatedIngredients.retainAll(ingredients);
               potentialIngredients.putIfAbsent(allergen, associatedIngredients);
             });
@@ -73,6 +82,26 @@ public class AllergenAssessment {
 
   public static void main(String[] args) throws IOException, URISyntaxException {
     AllergenAssessment assessment = new AllergenAssessment(Defaults.FILENAME);
+    System.out.println(assessment.countNonAllergenicListings());
+    System.out.println(assessment.getAllergenicIngredients());
+  }
+
+  public long countNonAllergenicListings() {
+    Set<String> nonAllergenicIngredients = potentialAllergens.entrySet().stream()
+        .filter((entry) -> entry.getValue().isEmpty())
+        .map(Map.Entry::getKey)
+        .collect(Collectors.toSet());
+    return ingredientListings.stream()
+        .flatMap(Collection::stream)
+        .filter(nonAllergenicIngredients::contains)
+        .count();
+  }
+
+  public String getAllergenicIngredients() {
+    return potentialIngredients.entrySet().stream()
+        .sorted(Map.Entry.comparingByKey())
+        .flatMap((entry) -> entry.getValue().stream())
+        .collect(Collectors.joining(","));
   }
 
   private void reduce() {
@@ -85,17 +114,15 @@ public class AllergenAssessment {
             String ingredient = allergenEntry.getValue().stream()
                 .findFirst()
                 .get();
-            Set<String> allergenSet = Set.of(allergen);
+            Set<String> allergenSet = new HashSet<>(Set.of(allergen));
             return !allergenSet.equals(potentialAllergens.put(ingredient, allergenSet))
                 | potentialAllergens.entrySet().stream()
                 .filter((ingredientEntry) -> !ingredientEntry.getKey().equals(ingredient))
-                .filter((ingredientEntry) -> ingredientEntry.getValue().contains(allergen))
-                .peek((ingredientEntry) -> ingredientEntry.getValue().remove(allergen))
+                .filter((ingredientEntry) -> ingredientEntry.getValue().remove(allergen))
                 .count() > 0
                 | potentialIngredients.entrySet().stream()
                 .filter((otherAllergenEntry) -> !otherAllergenEntry.getKey().equals(allergen))
-                .filter((otherAllergenEntry) -> otherAllergenEntry.getValue().contains(ingredient))
-                .peek((otherAllergenEntry) -> otherAllergenEntry.getValue().remove(ingredient))
+                .filter((otherAllergenEntry) -> otherAllergenEntry.getValue().remove(ingredient))
                 .count() > 0;
           })
           .count();

@@ -33,12 +33,11 @@ import java.util.stream.Stream;
 
 public class JurassicJigsaw {
 
-  public static final List<List<Integer>> SEA_MONSTER_POSITIONS = List.of(
+  private static final List<List<Integer>> SEA_MONSTER_POSITIONS = List.of(
       List.of(18),
       List.of(0, 5, 6, 11, 12, 17, 18, 19),
       List.of(1, 4, 7, 10, 13, 16)
   );
-
   private static final Pattern HEADER_PATTERN = Pattern.compile("Tile\\s+(\\d+):");
   private static final Pattern TILE_SPLITTER = Pattern.compile("\\r?\\n");
   private final Map<Integer, Tile> tiles;
@@ -95,6 +94,10 @@ public class JurassicJigsaw {
         * solution[solution.length - 1][solution.length - 1].getId());
     Tile image = jigsaw.merge(solution);
     System.out.println(jigsaw.getRoughness(image));
+  }
+
+  public Map<Integer, Tile> getTiles() {
+    return tiles;
   }
 
   public Tile[][] solve() {
