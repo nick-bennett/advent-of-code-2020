@@ -48,14 +48,6 @@ public class CrabCombat {
     }
   }
 
-  public List<Integer> getPlayer1() {
-    return player1;
-  }
-
-  public List<Integer> getPlayer2() {
-    return player2;
-  }
-
   public static void main(String[] args) throws IOException, URISyntaxException {
     CrabCombat combat = new CrabCombat("input-1.txt", "input-2.txt");
     List<Integer> hand1;
@@ -70,6 +62,14 @@ public class CrabCombat {
     combat.playRecursive(hand1, hand2);
     System.out.printf("Player 1: %d; Player 2: %d.%n",
         combat.checksum(hand1), combat.checksum(hand2));
+  }
+
+  public List<Integer> getPlayer1() {
+    return player1;
+  }
+
+  public List<Integer> getPlayer2() {
+    return player2;
   }
 
   public boolean playNonRecursive(List<Integer> hand1, List<Integer> hand2) {
