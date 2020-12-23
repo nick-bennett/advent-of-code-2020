@@ -87,6 +87,7 @@ public class MonsterMessages {
   public long countValid() {
     Rule root = rules.get(0);
     return messages.stream()
+        .map(List::of)
         .map(root::matches)
         .filter(Predicate.not(List::isEmpty))
         .filter((list) -> list.stream().anyMatch(String::isEmpty))
@@ -95,7 +96,7 @@ public class MonsterMessages {
 
   private interface Rule {
 
-    List<String> matches(String input);
+    List<String> matches(List<String> inputs);
 
   }
 
@@ -108,10 +109,12 @@ public class MonsterMessages {
     }
 
     @Override
-    public List<String> matches(String input) {
+    public List<String> matches(List<String> inputs) {
       List<String> results = new LinkedList<>();
-      if (input != null && !input.isEmpty() && input.charAt(0) == letter) {
-        results.add(input.substring(1));
+      for (String input : inputs) {
+        if (input != null && !input.isEmpty() && input.charAt(0) == letter) {
+          results.add(input.substring(1));
+        }
       }
       return results;
     }
@@ -127,22 +130,15 @@ public class MonsterMessages {
     }
 
     @Override
-    public List<String> matches(String input) {
+    public List<String> matches(List<String> inputs) {
       List<String> results = new LinkedList<>();
-      for (List<Integer> referenceList : ruleReferences) {
-        List<String> trials = new LinkedList<>();
-        trials.add(input);
-        List<String> outputs = new LinkedList<>();
-        for (Integer reference : referenceList) {
-          outputs.clear();
-          for (String trial : trials) {
-            outputs.addAll(rules.get(reference).matches(trial));
-          }
+      for (List<Integer> referenceList : ruleReferences) { // Iterate over all OR branch sequences.
+        List<String> outputs = new LinkedList<>(inputs);
+        for (Integer reference : referenceList) { // Iterate over rules in sequence.
+          outputs = rules.get(reference).matches(outputs); // Pass outputs from previous as inputs.
           if (outputs.isEmpty()) {
-            break;
+            break; // Don't continue with sequence
           }
-          trials.clear();
-          trials.addAll(outputs);
         }
         results.addAll(outputs);
       }
