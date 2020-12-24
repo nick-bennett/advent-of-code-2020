@@ -11,7 +11,7 @@ class Tile {
   private static final Transform IDENTITY = (data, row, col) -> data[row][col];
   private static final Transform RIGHT_ROTATION =
       (data, row, col) -> data[data.length - col - 1][row];
-  private static final Transform EVEN =
+  private static final Transform ODD_ROTATION =
       (data, row, col) -> data[data.length - row - 1][data.length - col - 1];
   private static final Transform LEFT_ROTATION =
       (data, row, col) -> data[col][data.length - row - 1];
@@ -24,7 +24,7 @@ class Tile {
       (data, row, col) -> data[data.length - row - 1][col];
 
   private static final List<Transform> transforms = List.of(
-      IDENTITY, RIGHT_ROTATION, EVEN, LEFT_ROTATION,
+      IDENTITY, RIGHT_ROTATION, ODD_ROTATION, LEFT_ROTATION,
       MAIN_TRANSPOSITION, HORIZONTAL_FLIP, COUNTER_TRANSPOSITION, VERTICAL_FLIP
   );
 
