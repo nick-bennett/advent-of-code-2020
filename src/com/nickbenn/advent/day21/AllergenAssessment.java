@@ -41,7 +41,6 @@ public class AllergenAssessment {
   private final Map<String, Set<String>> potentialAllergens;
   private final Map<String, Set<String>> potentialIngredients;
   private final List<Set<String>> ingredientListings;
-  private final List<Set<String>> allergenListings;
 
   public AllergenAssessment(String filename) throws URISyntaxException, IOException {
     try (
@@ -52,7 +51,6 @@ public class AllergenAssessment {
       potentialAllergens = new HashMap<>();
       potentialIngredients = new HashMap<>();
       ingredientListings = new LinkedList<>();
-      allergenListings = new LinkedList<>();
       stream
           .map(LINE_PATTERN::matcher)
           .filter(Matcher::matches)
@@ -62,7 +60,6 @@ public class AllergenAssessment {
             Set<String> allergens = ALLERGENS_SPLITTER.splitAsStream(matcher.group(2))
                 .collect(Collectors.toSet());
             ingredientListings.add(ingredients);
-            allergenListings.add(allergens);
             ingredients.forEach((ingredient) -> {
               Set<String> associatedAllergens =
                   potentialAllergens.getOrDefault(ingredient, new HashSet<>());

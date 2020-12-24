@@ -13,15 +13,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.nickbenn.advent.day23;
+package com.nickbenn.advent.day24;
 
-import com.nickbenn.advent.day18.Expression;
-import com.nickbenn.advent.day18.Expression.Operator;
 import com.nickbenn.advent.util.Defaults;
 import com.nickbenn.advent.util.Parser;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Collection;
 import java.util.stream.Stream;
 
 public class Main {
@@ -30,13 +27,13 @@ public class Main {
     try (
         Stream<String> stream = new Parser.Builder(getClass().getResource(filename).toURI())
             .build()
-            .lineStream()
+            .lineStream();
     ) {
     }
   }
 
   public static void main(String[] args) throws IOException, URISyntaxException {
-    Main main = new Main(Defaults.FILENAME);
+    Main assessment = new Main(Defaults.FILENAME);
   }
 
 }
