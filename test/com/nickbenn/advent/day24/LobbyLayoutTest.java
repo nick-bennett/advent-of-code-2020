@@ -15,25 +15,31 @@
  */
 package com.nickbenn.advent.day24;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.nickbenn.advent.util.Defaults;
-import com.nickbenn.advent.util.Parser;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.stream.Stream;
+import java.util.Set;
+import org.junit.jupiter.api.Test;
 
-public class Main {
+class LobbyLayoutTest {
 
-  public Main(String filename) throws URISyntaxException, IOException {
-    try (
-        Stream<String> stream = new Parser.Builder(getClass().getResource(filename).toURI())
-            .build()
-            .lineStream();
-    ) {
-    }
+  @Test
+  void getInitialConfiguration() throws IOException, URISyntaxException {
+    LobbyLayout layout = new LobbyLayout(Defaults.TEST_FILENAME);
+    Set<HexagonalCell> population = layout.getInitialConfiguration();
+    assertEquals(10, population.size());
   }
 
-  public static void main(String[] args) throws IOException, URISyntaxException {
-    Main assessment = new Main(Defaults.FILENAME);
+  @Test
+  void iterate() throws IOException, URISyntaxException {
+    LobbyLayout layout = new LobbyLayout(Defaults.TEST_FILENAME);
+    Set<HexagonalCell> population = layout.getInitialConfiguration();
+    for (int i = 0; i < LobbyLayout.NUM_GENERATIONS; i++) {
+      population = layout.iterate(population);
+    }
+    assertEquals(2208, population.size());
   }
 
 }

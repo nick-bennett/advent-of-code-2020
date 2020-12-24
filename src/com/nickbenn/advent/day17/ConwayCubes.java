@@ -23,7 +23,9 @@ import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -82,24 +84,24 @@ public class ConwayCubes {
 
   public void iterate(Set<Cell> actives) {
     Set<Cell> next = new TreeSet<>(REVERSE_DIMENSION_COMPARATOR);
-    Set<Cell> inactives = new TreeSet<>(REVERSE_DIMENSION_COMPARATOR);
+    Map<Cell, Integer> inactives = new TreeMap<>(REVERSE_DIMENSION_COMPARATOR);
     for (Cell cell : actives) {
       Set<Cell> neighbors = cell.getNeighbors();
-      inactives.addAll(neighbors);
+      for (Cell neighbor : neighbors) {
+        if (!actives.contains(neighbor)) {
+          inactives.put(neighbor, inactives.getOrDefault(neighbor, 0) + 1);
+        }
+      }
       neighbors.retainAll(actives);
       int size = neighbors.size();
       if (size >= 2 && size <= 3) {
         next.add(cell);
       }
     }
-    inactives.removeAll(actives);
-    for (Cell inactive : inactives) {
-      Collection<Cell> activeNeighbors = inactive.getNeighbors();
-      activeNeighbors.retainAll(actives);
-      if (activeNeighbors.size() == 3) {
-        next.add(inactive);
-      }
-    }
+    inactives.entrySet().stream()
+        .filter((entry) -> entry.getValue() == 3)
+        .map(Map.Entry::getKey)
+        .forEach(next::add);
     actives.clear();
     actives.addAll(next);
   }
