@@ -20,24 +20,30 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.concurrent.ExecutionException;
 import org.junit.jupiter.api.Test;
 
-class CrabCupsTest {
+class CrabCircleTest {
 
   static final String INITIAL_ARRANGEMENT = "389125467";
   static final String EXPECTED_ARRANGEMENT_GAME_1 = "67384529";
   static final long EXPECTED_PRODUCT_GAME_2 = 149245887792L;
 
   @Test
-  void play() throws ExecutionException, InterruptedException {
-    CrabCups crabCups = new CrabCups(INITIAL_ARRANGEMENT);
-    crabCups.play(CrabCups.MOVES_IN_GAME_1);
-    assertEquals(EXPECTED_ARRANGEMENT_GAME_1, crabCups.reportCircle());
+  void play() {
+    CupCircle circle;
+    circle = new CupCircle(INITIAL_ARRANGEMENT, INITIAL_ARRANGEMENT.length());
+    for (int i = 0; i < CrabCups.MOVES_IN_GAME_1; i++) {
+      circle.move();
+    }
+    assertEquals(EXPECTED_ARRANGEMENT_GAME_1, circle.reportItems());
   }
 
   @Test
-  void play_long() throws ExecutionException, InterruptedException {
-    CrabCups crabCups = new CrabCups(INITIAL_ARRANGEMENT, CrabCups.CUPS_IN_GAME_2);
-    crabCups.play(CrabCups.MOVES_IN_GAME_2);
-    assertEquals(EXPECTED_PRODUCT_GAME_2, crabCups.reportNextProduct());
+  void play_long() {
+    CupCircle circle;
+    circle = new CupCircle(INITIAL_ARRANGEMENT, 1_000_000);
+    for (int i = 0; i < CrabCups.MOVES_IN_GAME_2; i++) {
+      circle.move();
+    }
+    assertEquals(EXPECTED_PRODUCT_GAME_2, circle.reportProduct(2));
   }
 
 }
