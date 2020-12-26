@@ -28,6 +28,10 @@ public class CupCircle {
 
   private Cup current;
 
+  public CupCircle(String preassigned) {
+    this(preassigned, preassigned.length());
+  }
+
   public CupCircle(String preassigned, int size) {
     Cup[] cups = new Cup[size];
     Map<Integer, Cup> valueMap = new HashMap<>();

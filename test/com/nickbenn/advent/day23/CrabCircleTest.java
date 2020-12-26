@@ -24,12 +24,13 @@ class CrabCircleTest {
 
   static final String INITIAL_ARRANGEMENT = "389125467";
   static final String EXPECTED_ARRANGEMENT_GAME_1 = "67384529";
+  static final int SIZE_GAME_2 = 1_000_000;
   static final long EXPECTED_PRODUCT_GAME_2 = 149245887792L;
 
   @Test
   void play() {
     CupCircle circle;
-    circle = new CupCircle(INITIAL_ARRANGEMENT, INITIAL_ARRANGEMENT.length());
+    circle = new CupCircle(INITIAL_ARRANGEMENT);
     for (int i = 0; i < CrabCups.MOVES_IN_GAME_1; i++) {
       circle.move();
     }
@@ -39,7 +40,7 @@ class CrabCircleTest {
   @Test
   void play_long() {
     CupCircle circle;
-    circle = new CupCircle(INITIAL_ARRANGEMENT, 1_000_000);
+    circle = new CupCircle(INITIAL_ARRANGEMENT, SIZE_GAME_2);
     for (int i = 0; i < CrabCups.MOVES_IN_GAME_2; i++) {
       circle.move();
     }

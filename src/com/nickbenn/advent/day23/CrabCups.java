@@ -40,11 +40,10 @@ public class CrabCups {
   public static final int MOVES_IN_GAME_2 = 10_000_000;
 
   private static final String INITIAL_ARRANGEMENT = "389547612";
-//  private static final String INITIAL_ARRANGEMENT = "389125467";
 
   public static void main(String[] args) {
     CupCircle circle;
-    circle = new CupCircle(INITIAL_ARRANGEMENT, INITIAL_ARRANGEMENT.length());
+    circle = new CupCircle(INITIAL_ARRANGEMENT);
     for (int i = 0; i < MOVES_IN_GAME_1; i++) {
       circle.move();
     }
