@@ -76,7 +76,7 @@ public class ConwayCubes {
     Set<Cell> population = cells.stream()
         .map((cell) -> new Cell(cell, dimensions))
         .collect(Collectors.toCollection(() -> new TreeSet<>(REVERSE_DIMENSION_COMPARATOR)));
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < generations; i++) {
       iterate(population);
     }
     return population.size();
